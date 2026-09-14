@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Rauchfrei Coach</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        .breath-circle {
+            width: 150px; height: 150px; border-radius: 50%;
+            background: radial-gradient(circle, #38bdf8, #0284c7);
+            animation: breathe 8s infinite ease-in-out;
+        }
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.6); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="p-4 max-w-md mx-auto min-h-screen flex flex-col justify-between">
+
+    <!-- Dashboard Header -->
+    <header class="text-center mt-4">
+        <h1 class="text-2xl font-bold text-sky-400">Dein Rauchfrei-Coach</h1>
+        <p class="text-xs text-slate-400">Freiheit & Fokus</p>
+    </header>
+
+    <!-- Zähler-Sektion -->
+    <section class="bg-slate-800/80 p-4 rounded-2xl shadow-xl border border-slate-700 text-center my-4">
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <span class="text-xs text-slate-400 block">Gespartes Geld</span>
+                <span id="moneySaved" class="text-2xl font-black text-emerald-400">0,00 €</span>
+            </div>
+            <div>
+                <span class="text-xs text-slate-400 block">Nicht geraucht</span>
+                <span id="cigsAvoided" class="text-2xl font-black text-sky-400">0</span>
+            </div>
+        </div>
+        <div class="mt-3 pt-3 border-t border-slate-700">
+            <span class="text-xs text-slate-400 block">Rauchfreie Zeit</span>
+            <span id="timeQuit" class="text-sm font-semibold text-slate-200">0 Std. 0 Min.</span>
+        </div>
+    </section>
+
+    <!-- Gefühlslage & Notfall-Button -->
+    <section class="space-y-3">
+        <h2 class="text-sm font-semibold text-slate-300">Wie fühlst du dich gerade?</h2>
+        <div class="grid grid-cols-2 gap-2">
+            <button onclick="triggerHelp('stress')" class="bg-slate-700 hover:bg-slate-600 p-3 rounded-xl text-left text-sm font-medium">😰 Gestresst</button>
+            <button onclick="triggerHelp('craving')" class="bg-rose-900/60 hover:bg-rose-800/60 border border-rose-500/30 p-3 rounded-xl text-left text-sm font-medium">🚨 Starke Schmacht</button>
+            <button onclick="triggerHelp('bored')" class="bg-slate-700 hover:bg-slate-600 p-3 rounded-xl text-left text-sm font-medium">🥱 Langeweile</button>
+            <button onclick="triggerHelp('restless')" class="bg-slate-700 hover:bg-slate-600 p-3 rounded-xl text-left text-sm font-medium">⚡ Unruhig</button>
+        </div>
+    </section>
+
+    <!-- Interaktiver Entspannungs-Bereich (Dynamisch) -->
+    <section id="exerciseArea" class="hidden bg-slate-800 p-4 rounded-2xl border border-sky-500/30 my-4 text-center">
+        <h3 id="exerciseTitle" class="text-md font-bold text-sky-300 mb-2">Atemübung</h3>
+        <p id="exerciseText" class="text-xs text-slate-300 mb-4">Atme tief ein, wenn der Kreis wächst, und aus, wenn er schrumpft.</p>
+        
+        <div class="flex justify-center my-6">
+            <div class="breath-circle"></div>
+        </div>
+
+        <!-- Video-/Audio-Elemente -->
+        <audio id="relaxAudio" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=relaxing-ocean-waves-112521.mp3"></audio>
+        
+        <button onclick="toggleAudio()" class="bg-sky-600 hover:bg-sky-500 text-white text-xs px-4 py-2 rounded-lg mb-2">
+            🎵 Meeresrauschen An/Aus
+        </button>
+    </section>
+
+    <!-- Footer / Reset -->
+    <footer class="text-center text-xs text-slate-500 my-4">
+        <button onclick="setQuitDate()" class="underline">Startzeitpunkt anpassen</button>
+    </footer>
+
+    <script>
+        // Konfiguration: 30 Cigs = 15€ pro Tag -> 0.625€/Std, 1.25 Cigs/Std
+        const COST_PER_DAY = 15;
+        const CIGS_PER_DAY = 30;
+
+        function getQuitDate() {
+            let d = localStorage.getItem('quitDate');
+            if (!d) {
+                d = new Date().toISOString();
+                localStorage.setItem('quitDate', d);
+            }
+            return new Date(d);
+        }
+
+        function setQuitDate() {
+            const now = new Date().toISOString();
+            localStorage.setItem('quitDate', now);
+            updateStats();
+        }
+
+        function updateStats() {
+            const quitDate = getQuitDate();
+            const now = new Date();
+            const diffMs = Math.max(0, now - quitDate);
+            const diffHours = diffMs / (1000 * 60 * 60);
+
+            const saved = (diffHours / 24) * COST_PER_DAY;
+            const cigs = (diffHours / 24) * CIGS_PER_DAY;
+
+            document.getElementById('moneySaved').innerText = saved.toFixed(2) + " €";
+            document.getElementById('cigsAvoided').innerText = Math.floor(cigs);
+
+            const hrs = Math.floor(diffHours);
+            const mins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById('timeQuit').innerText = `${hrs} Std. ${mins} Min.`;
+        }
+
+        function triggerHelp(type) {
+            const area = document.getElementById('exerciseArea');
+            const title = document.getElementById('exerciseTitle');
+            const text = document.getElementById('exerciseText');
+            area.classList.remove('hidden');
+
+            if(type === 'craving') {
+                title.innerText = "Schmacht-Notfall";
+                text.innerText = "Das Verlangen dauert meist nur 3 Minuten. Atme ruhig und trinke ein Glas kaltes Wasser.";
+                speakText("Tief durchatmen, Klaus. Die Schmacht ist nur eine Welle. Lass sie vorbeiziehen, ohne einzusteigen.");
+            } else if(type === 'stress') {
+                title.innerText = "Anti-Stress-Modus";
+                text.innerText = "Folge dem Kreis. 4 Sekunden Einatmen, 7 Sekunden Halten, 8 Sekunden Ausatmen.";
+                speakText("Entspanne deine Schultern. Du brauchst keine Zigarette gegen den Stress.");
+            } else {
+                title.innerText = "Fokus & Entspannung";
+                text.innerText = "Nutze den Moment für eine kurze Pause.";
+            }
+        }
+
+        function speakText(msg) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(msg);
+                utterance.lang = 'de-DE';
+                // Versuche eine weibliche Stimme zu wählen
+                const voices = window.speechSynthesis.getVoices();
+                const femaleVoice = voices.find(v => v.lang.includes('de') && (v.name.includes('Katja') || v.name.includes('Maren') || v.name.includes('Female')));
+                if (femaleVoice) utterance.voice = femaleVoice;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function toggleAudio() {
+            const audio = document.getElementById('relaxAudio');
+            if (audio.paused) { audio.play(); } else { audio.pause(); }
+        }
+
+        setInterval(updateStats, 10000);
+        updateStats();
+    </script>
+</body>
+</html>
