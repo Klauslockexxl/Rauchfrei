@@ -5,82 +5,111 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Rauchfrei Coach</title>
+    <title>Klaus Rauchfrei Coach</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        body {
+            background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), 
+                        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80') center/cover fixed;
+            color: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
         .breath-circle {
-            width: 150px; height: 150px; border-radius: 50%;
+            width: 140px; height: 140px; border-radius: 50%;
             background: radial-gradient(circle, #38bdf8, #0284c7);
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.4);
             animation: breathe 8s infinite ease-in-out;
         }
         @keyframes breathe {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.6); opacity: 1; }
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.5); opacity: 1; }
         }
     </style>
 </head>
 <body class="p-4 max-w-md mx-auto min-h-screen flex flex-col justify-between">
 
-    <!-- Dashboard Header -->
-    <header class="text-center mt-4">
-        <h1 class="text-2xl font-bold text-sky-400">Dein Rauchfrei-Coach</h1>
-        <p class="text-xs text-slate-400">Freiheit & Fokus</p>
+    <!-- Header -->
+    <header class="text-center mt-2">
+        <h1 class="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-400">Rauchfrei Coach</h1>
+        <p class="text-xs text-slate-400 mt-1">Für Klaus • Dein Weg in die Freiheit</p>
     </header>
 
-    <!-- Zähler-Sektion -->
-    <section class="bg-slate-800/80 p-4 rounded-2xl shadow-xl border border-slate-700 text-center my-4">
+    <!-- Zähler Dashboard -->
+    <section class="glass p-5 rounded-3xl shadow-2xl text-center my-3">
         <div class="grid grid-cols-2 gap-4">
-            <div>
-                <span class="text-xs text-slate-400 block">Gespartes Geld</span>
+            <div class="p-2 rounded-2xl bg-slate-800/50 border border-slate-700/50">
+                <span class="text-[11px] uppercase tracking-wider text-slate-400 block mb-1">Gespartes Geld</span>
                 <span id="moneySaved" class="text-2xl font-black text-emerald-400">0,00 €</span>
             </div>
-            <div>
-                <span class="text-xs text-slate-400 block">Nicht geraucht</span>
+            <div class="p-2 rounded-2xl bg-slate-800/50 border border-slate-700/50">
+                <span class="text-[11px] uppercase tracking-wider text-slate-400 block mb-1">Nicht geraucht</span>
                 <span id="cigsAvoided" class="text-2xl font-black text-sky-400">0</span>
             </div>
         </div>
-        <div class="mt-3 pt-3 border-t border-slate-700">
-            <span class="text-xs text-slate-400 block">Rauchfreie Zeit</span>
-            <span id="timeQuit" class="text-sm font-semibold text-slate-200">0 Std. 0 Min.</span>
+        <div class="mt-3 pt-3 border-t border-slate-700/50">
+            <span class="text-xs text-slate-400">Rauchfreie Zeit: </span>
+            <span id="timeQuit" class="text-sm font-bold text-slate-100">0 Std. 0 Min.</span>
         </div>
     </section>
 
-    <!-- Gefühlslage & Notfall-Button -->
-    <section class="space-y-3">
-        <h2 class="text-sm font-semibold text-slate-300">Wie fühlst du dich gerade?</h2>
-        <div class="grid grid-cols-2 gap-2">
-            <button onclick="triggerHelp('stress')" class="bg-slate-700 hover:bg-slate-600 p-3 rounded-xl text-left text-sm font-medium">😰 Gestresst</button>
-            <button onclick="triggerHelp('craving')" class="bg-rose-900/60 hover:bg-rose-800/60 border border-rose-500/30 p-3 rounded-xl text-left text-sm font-medium">🚨 Starke Schmacht</button>
-            <button onclick="triggerHelp('bored')" class="bg-slate-700 hover:bg-slate-600 p-3 rounded-xl text-left text-sm font-medium">🥱 Langeweile</button>
-            <button onclick="triggerHelp('restless')" class="bg-slate-700 hover:bg-slate-600 p-3 rounded-xl text-left text-sm font-medium">⚡ Unruhig</button>
-        </div>
-    </section>
-
-    <!-- Interaktiver Entspannungs-Bereich (Dynamisch) -->
-    <section id="exerciseArea" class="hidden bg-slate-800 p-4 rounded-2xl border border-sky-500/30 my-4 text-center">
-        <h3 id="exerciseTitle" class="text-md font-bold text-sky-300 mb-2">Atemübung</h3>
-        <p id="exerciseText" class="text-xs text-slate-300 mb-4">Atme tief ein, wenn der Kreis wächst, und aus, wenn er schrumpft.</p>
-        
-        <div class="flex justify-center my-6">
-            <div class="breath-circle"></div>
-        </div>
-
-        <!-- Video-/Audio-Elemente -->
-        <audio id="relaxAudio" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=relaxing-ocean-waves-112521.mp3"></audio>
-        
-        <button onclick="toggleAudio()" class="bg-sky-600 hover:bg-sky-500 text-white text-xs px-4 py-2 rounded-lg mb-2">
-            🎵 Meeresrauschen An/Aus
+    <!-- KI-Coach Notfall-Gesprächstaste -->
+    <section class="my-2">
+        <button onclick="askCoach('Ich habe gerade extrem starken Suchtdruck und brauche SOFORT Motivation!')" 
+                class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-bold shadow-lg flex items-center justify-center gap-3 border border-rose-400/30 active:scale-95 transition">
+            <span class="text-xl">🎙️</span>
+            <span>Mit KI-Coach sprechen (Notfall)</span>
         </button>
     </section>
 
-    <!-- Footer / Reset -->
-    <footer class="text-center text-xs text-slate-500 my-4">
-        <button onclick="setQuitDate()" class="underline">Startzeitpunkt anpassen</button>
+    <!-- Gefühlslage -->
+    <section class="space-y-2 my-2">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-300">Wie geht es dir gerade?</h2>
+        <div class="grid grid-cols-2 gap-2">
+            <button onclick="askCoach('Ich fühle mich gerade gestresst und angespannt.')" class="glass p-3 rounded-xl text-left text-xs font-medium hover:bg-slate-700/50">😰 Gestresst</button>
+            <button onclick="askCoach('Mir ist langweilig und das Verlangen nach einer Zigarette steigt.')" class="glass p-3 rounded-xl text-left text-xs font-medium hover:bg-slate-700/50">🥱 Langeweile</button>
+            <button onclick="askCoach('Ich bin innerlich unruhig und nervös.')" class="glass p-3 rounded-xl text-left text-xs font-medium hover:bg-slate-700/50">⚡ Unruhig</button>
+            <button onclick="askCoach('Gib mir eine wichtige Erkenntnis aus dem Buch Endlich Nichtraucher von Allen Carr.')" class="glass p-3 rounded-xl text-left text-xs font-medium hover:bg-slate-700/50">📖 Carr-Fakt</button>
+        </div>
+    </section>
+
+    <!-- KI Chat & Ausgabe -->
+    <section id="aiBox" class="glass p-4 rounded-2xl border border-sky-500/30 my-2 space-y-3">
+        <div id="aiResponse" class="text-xs text-slate-200 leading-relaxed italic">
+            „Hallo Klaus! Dein Gemini-API-Key ist erfolgreich eingebunden. Drücke oben auf den Notfall-Button oder frage mich etwas!“
+        </div>
+        <div class="flex gap-2">
+            <input type="text" id="userInput" placeholder="Frage an die KI stellen..." class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-sky-400">
+            <button onclick="sendUserQuery()" class="bg-sky-600 hover:bg-sky-500 px-4 py-2 rounded-xl text-xs font-bold">Senden</button>
+        </div>
+    </section>
+
+    <!-- Entspannung & Atemübung -->
+    <section class="glass p-4 rounded-2xl text-center my-2">
+        <div class="flex justify-center my-4">
+            <div class="breath-circle"></div>
+        </div>
+        <button onclick="toggleAudio()" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs px-4 py-2 rounded-xl">
+            🎵 Meeresrauschen An/Aus
+        </button>
+        <audio id="relaxAudio" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=relaxing-ocean-waves-112521.mp3"></audio>
+    </section>
+
+    <!-- Fußzeile -->
+    <footer class="text-center text-[10px] text-slate-500 my-2 flex justify-between px-2">
+        <button onclick="setQuitDate()" class="underline">Startzeit anpassen</button>
+        <span class="text-emerald-400">✔ Gemini API Aktiv</span>
     </footer>
 
     <script>
-        // Konfiguration: 30 Cigs = 15€ pro Tag -> 0.625€/Std, 1.25 Cigs/Std
+        // Eingebundener Google Gemini API Schlüssel
+        const GEMINI_API_KEY = "AIzaSyCnGvLac0zQ5Unw9vVmsv07SF3TfLy1KgA";
+        
         const COST_PER_DAY = 15;
         const CIGS_PER_DAY = 30;
 
@@ -116,36 +145,75 @@
             document.getElementById('timeQuit').innerText = `${hrs} Std. ${mins} Min.`;
         }
 
-        function triggerHelp(type) {
-            const area = document.getElementById('exerciseArea');
-            const title = document.getElementById('exerciseTitle');
-            const text = document.getElementById('exerciseText');
-            area.classList.remove('hidden');
+        async function askCoach(promptText) {
+            const respBox = document.getElementById('aiResponse');
+            respBox.innerText = "Coach denkt nach...";
 
-            if(type === 'craving') {
-                title.innerText = "Schmacht-Notfall";
-                text.innerText = "Das Verlangen dauert meist nur 3 Minuten. Atme ruhig und trinke ein Glas kaltes Wasser.";
-                speakText("Tief durchatmen, Klaus. Die Schmacht ist nur eine Welle. Lass sie vorbeiziehen, ohne einzusteigen.");
-            } else if(type === 'stress') {
-                title.innerText = "Anti-Stress-Modus";
-                text.innerText = "Folge dem Kreis. 4 Sekunden Einatmen, 7 Sekunden Halten, 8 Sekunden Ausatmen.";
-                speakText("Entspanne deine Schultern. Du brauchst keine Zigarette gegen den Stress.");
-            } else {
-                title.innerText = "Fokus & Entspannung";
-                text.innerText = "Nutze den Moment für eine kurze Pause.";
+            try {
+                // Direkte Abfrage der Google Gemini API
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `Du bist ein empathischer, motivierender Nichtraucher-Coach im Stil von Allen Carr für Klaus. Antworte in 2-3 kurzen, prägnanten Sätzen. Frage/Problem von Klaus: "${promptText}"`
+                            }]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                let text = "Bleib stark, Klaus! Du schaffst das.";
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    text = data.candidates[0].content.parts[0].text;
+                }
+
+                respBox.innerText = `„${text}“`;
+                speakText(text);
+
+            } catch (error) {
+                console.error("Gemini API Fehler:", error);
+                respBox.innerText = "Klaus, bleib ruhig. Das Nikotinmonster stirbt gerade. In 3 Minuten ist das Verlangen vorbei!";
+                speakText("Klaus, bleib ruhig. Das Nikotinmonster stirbt gerade. In 3 Minuten ist das Verlangen vorbei!");
             }
         }
 
-        function speakText(msg) {
+        function sendUserQuery() {
+            const input = document.getElementById('userInput');
+            if(input.value.trim() !== "") {
+                askCoach(input.value);
+                input.value = "";
+            }
+        }
+
+        function speakText(text) {
             if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(msg);
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'de-DE';
-                // Versuche eine weibliche Stimme zu wählen
+                utterance.pitch = 1.05;
+                utterance.rate = 0.95;
+
                 const voices = window.speechSynthesis.getVoices();
-                const femaleVoice = voices.find(v => v.lang.includes('de') && (v.name.includes('Katja') || v.name.includes('Maren') || v.name.includes('Female')));
-                if (femaleVoice) utterance.voice = femaleVoice;
+                // Priorisiere hochwertige, sanfte iOS/Browser-Stimmen
+                const preferredVoice = voices.find(v => v.lang.includes('de') && (
+                    v.name.includes('Anna') || 
+                    v.name.includes('Viktoria') || 
+                    v.name.includes('Siri') || 
+                    v.name.includes('Google') || 
+                    v.name.includes('Helena')
+                ));
+
+                if (preferredVoice) utterance.voice = preferredVoice;
+
                 window.speechSynthesis.speak(utterance);
             }
+        }
+
+        // Stimmen im Browser vorladen
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
         }
 
         function toggleAudio() {
