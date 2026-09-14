@@ -6,6 +6,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Klaus Rauchfrei Coach</title>
+    
+    <!-- iPhone App-Icon (iOS Home-Bildschirm) -->
+    <link rel="apple-touch-icon" href="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&h=300&q=80">
+    <link rel="shortcut icon" href="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&h=300&q=80">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -21,7 +26,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         .breath-circle {
-            width: 130px; height: 130px; border-radius: 50%;
+            width: 120px; height: 120px; border-radius: 50%;
             background: radial-gradient(circle, rgba(56, 189, 248, 0.8), rgba(2, 132, 199, 0.5));
             box-shadow: 0 0 35px rgba(56, 189, 248, 0.6);
             animation: breathe 8s infinite ease-in-out;
@@ -58,23 +63,55 @@
         </div>
     </section>
 
-    <!-- KI-Coach Notfall-Gesprächstaste -->
-    <section class="my-2">
-        <button onclick="askCoach('Ich habe gerade extrem starken Suchtdruck und brauche SOFORT Motivation!')" 
+    <!-- KI-Coach Notfall-Gesprächstaste mit Schmacht-Timer -->
+    <section class="my-2 space-y-2">
+        <button onclick="startEmergency()" 
                 class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-rose-600 via-amber-600 to-amber-500 hover:brightness-110 text-white font-extrabold shadow-2xl flex items-center justify-center gap-3 border border-rose-300/40 active:scale-95 transition">
             <span class="text-2xl">🎙️</span>
             <span>Mit KI-Coach sprechen (Notfall)</span>
         </button>
+        <div id="timerBox" class="hidden glass p-3 rounded-xl text-center border border-rose-500/40">
+            <span class="text-xs text-rose-300 block font-semibold">Schmacht-Welle überwinden:</span>
+            <span id="timerText" class="text-xl font-black text-white">03:00</span>
+        </div>
     </section>
 
-    <!-- Gefühlslage -->
+    <!-- Gesundheits-Meilensteine -->
+    <section class="glass p-3 rounded-2xl my-1 space-y-2">
+        <h2 class="text-[11px] font-bold uppercase tracking-wider text-slate-200">Körperliche Regeneration</h2>
+        <div class="space-y-1 text-[11px]">
+            <div>
+                <div class="flex justify-between text-slate-300 mb-0.5">
+                    <span>20 Min: Puls & Blutdruck</span>
+                    <span id="p1-val">0%</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-1.5"><div id="p1-bar" class="bg-emerald-400 h-1.5 rounded-full" style="width: 0%"></div></div>
+            </div>
+            <div>
+                <div class="flex justify-between text-slate-300 mb-0.5">
+                    <span>8 Std: Sauerstoffgehalt im Blut</span>
+                    <span id="p2-val">0%</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-1.5"><div id="p2-bar" class="bg-sky-400 h-1.5 rounded-full" style="width: 0%"></div></div>
+            </div>
+            <div>
+                <div class="flex justify-between text-slate-300 mb-0.5">
+                    <span>24 Std: Herzinfarktrisiko sinkt</span>
+                    <span id="p3-val">0%</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-1.5"><div id="p3-bar" class="bg-teal-400 h-1.5 rounded-full" style="width: 0%"></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gefühlslage & Impuls-Buttons -->
     <section class="space-y-2 my-1">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-200 shadow-sm">Wie geht es dir gerade?</h2>
+        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-200">Wie geht es dir gerade?</h2>
         <div class="grid grid-cols-2 gap-2">
             <button onclick="askCoach('Ich fühle mich gerade gestresst und angespannt.')" class="glass p-3 rounded-xl text-left text-xs font-semibold hover:bg-slate-800/60">😰 Gestresst</button>
             <button onclick="askCoach('Mir ist langweilig und das Verlangen nach einer Zigarette steigt.')" class="glass p-3 rounded-xl text-left text-xs font-semibold hover:bg-slate-800/60">🥱 Langeweile</button>
             <button onclick="askCoach('Ich bin innerlich unruhig und nervös.')" class="glass p-3 rounded-xl text-left text-xs font-semibold hover:bg-slate-800/60">⚡ Unruhig</button>
-            <button onclick="askCoach('Gib mir eine wichtige Erkenntnis aus dem Buch Endlich Nichtraucher von Allen Carr.')" class="glass p-3 rounded-xl text-left text-xs font-semibold hover:bg-slate-800/60">📖 Carr-Fakt</button>
+            <button onclick="getRandomCarrQuote()" class="glass p-3 rounded-xl text-left text-xs font-semibold hover:bg-slate-800/60">📖 Carr-Impuls</button>
         </div>
     </section>
 
@@ -132,6 +169,14 @@
             relax: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a7413d.mp3?filename=ambient-relaxing-10881.mp3"
         };
 
+        const carrQuotes = [
+            "Du verzichtest auf rein gar nichts. Es gibt kein Opfer – nur den Gewinn deiner Freiheit!",
+            "Das Nikotinmonster erzeugt die Leere erst, die du versuchst zu füllen. Es ist eine Falle.",
+            "Jede Zigarette macht das Verlangen nach der nächsten nur stärker. Unterbrich die Kette!",
+            "Nichtraucher vermissen rein gar nichts. Du wirst endlich wieder so frei wie vor deiner ersten Zigarette.",
+            "Freue dich über jedes Signal deines Körpers – er heilt gerade!"
+        ];
+
         function getQuitDate() {
             let d = localStorage.getItem('quitDate');
             if (!d) {
@@ -162,6 +207,46 @@
             const hrs = Math.floor(diffHours);
             const mins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
             document.getElementById('timeQuit').innerText = `${hrs} Std. ${mins} Min.`;
+
+            // Meilensteine berechnen
+            const p1 = Math.min(100, Math.floor((diffHours / (20 / 60)) * 100));
+            const p2 = Math.min(100, Math.floor((diffHours / 8) * 100));
+            const p3 = Math.min(100, Math.floor((diffHours / 24) * 100));
+
+            document.getElementById('p1-val').innerText = p1 + "%";
+            document.getElementById('p1-bar').style.width = p1 + "%";
+            document.getElementById('p2-val').innerText = p2 + "%";
+            document.getElementById('p2-bar').style.width = p2 + "%";
+            document.getElementById('p3-val').innerText = p3 + "%";
+            document.getElementById('p3-bar').style.width = p3 + "%";
+        }
+
+        function startEmergency() {
+            askCoach('Ich habe gerade extrem starken Suchtdruck und brauche SOFORT Motivation!');
+            
+            // 3 Minuten Countdown starten
+            const box = document.getElementById('timerBox');
+            box.classList.remove('hidden');
+            let timeLeft = 180;
+            
+            const interval = setInterval(() => {
+                const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+                const s = (timeLeft % 60).toString().padStart(2, '0');
+                document.getElementById('timerText').innerText = `${m}:${s}`;
+                timeLeft--;
+                
+                if (timeLeft < 0) {
+                    clearInterval(interval);
+                    document.getElementById('timerText').innerText = "Welle geschafft!";
+                }
+            }, 1000);
+        }
+
+        function getRandomCarrQuote() {
+            const q = carrQuotes[Math.floor(Math.random() * carrQuotes.length)];
+            const respBox = document.getElementById('aiResponse');
+            respBox.innerText = `„${q}“`;
+            speakText(q);
         }
 
         async function askCoach(promptText) {
